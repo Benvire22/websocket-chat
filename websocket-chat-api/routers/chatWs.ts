@@ -1,6 +1,7 @@
 import express from 'express';
 import { WebSocket } from 'ws';
 import { IncomingMessage, UserMessage } from '../types';
+import User from '../models/User';
 
 const chatWsRouter = express.Router();
 
@@ -11,32 +12,35 @@ chatWsRouter.ws('/', async (ws) => {
   try {
     connectedClients.push(ws);
     console.log('Client connected! Total clients', connectedClients.length);
-    ws.send(JSON.stringify(messages));
+    ws.send(JSON.stringify(messages.splice(-30)));
 
-    ws.on('message', (message) => {
+    ws.on('message', async (message) => {
       try {
         const decodedMessage = JSON.parse(message.toString()) as IncomingMessage;
 
+        let user = '';
+
         if (decodedMessage.type === 'LOGIN') {
-          if (decodedMessage.payload !== 'my-token') {
+          const existingUser = await User.findOne({ token: decodedMessage.payload });
+
+          if (!existingUser) {
             ws.send(JSON.stringify({
               type: 'ERROR',
               payload: 'Wrong token',
             }));
 
             ws.close();
-
             return;
           }
-        }
 
+          user = existingUser.displayName;
+        }
 
         if (decodedMessage.type === 'SEND_MESSAGE') {
           const newMessage = {
-            user: 'user',
+            user,
             message: decodedMessage.payload,
           };
-
 
           connectedClients.forEach((clientWs) => {
             clientWs.send(JSON.stringify({
