@@ -3,7 +3,7 @@ import { CorsOptions } from 'cors';
 
 const rootPath = __dirname;
 
-const whiteList: string[] = ['http://localhost:5173'];
+const whiteList: string[] = ['http://localhost:5173', 'http://localhost:5174'];
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     if (!origin || whiteList.indexOf(origin) !== -1) {

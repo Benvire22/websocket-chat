@@ -1,4 +1,14 @@
 
+export interface ChatMessage {
+  user: string;
+  message: string;
+}
+
+export interface IncomingMessage {
+  type: string;
+  payload: ChatMessage;
+}
+
 export interface RegisterMutation {
   username: string;
   password: string;
