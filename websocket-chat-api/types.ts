@@ -1,5 +1,15 @@
 import { Model } from 'mongoose';
 
+export interface IncomingMessage {
+  type: string;
+  payload: string;
+}
+
+export interface UserMessage {
+  user: string;
+  message: string;
+}
+
 export interface UserFields {
   username: string;
   password: string;
