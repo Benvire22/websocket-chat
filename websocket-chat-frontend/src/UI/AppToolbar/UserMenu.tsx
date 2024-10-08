@@ -24,7 +24,7 @@ const UserMenu: React.FC<Props> = ({ user }) => {
 
   return (
     <Grid>
-      <Button color="inherit" sx={{ ml: 10, textTransform: 'none' }} onClick={handleClick}>
+      <Button color="inherit" sx={{ fontSize: '18px', textTransform: 'none' }} onClick={handleClick}>
         {user.displayName ? user.displayName : user.username}
       </Button>
       <Menu open={isOpen} onClose={handleClose} anchorEl={anchorEl} keepMounted>

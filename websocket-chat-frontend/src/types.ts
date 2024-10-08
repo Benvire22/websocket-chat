@@ -9,11 +9,6 @@ export interface ChatUser {
   displayName: string;
 }
 
-export interface IncomingMessage {
-  type: string;
-  payload: ChatMessage;
-}
-
 export interface RegisterMutation {
   username: string;
   password: string;
