@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 export interface IncomingMessage {
   type: string;
@@ -8,6 +8,11 @@ export interface IncomingMessage {
 export interface UserMessage {
   user: string;
   message: string;
+}
+
+export interface ChatUser {
+  _id: string | mongoose.Types.ObjectId;
+  displayName: string;
 }
 
 export interface UserFields {

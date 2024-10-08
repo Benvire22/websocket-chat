@@ -23,7 +23,7 @@ const AppToolbar = () => {
         <Grid sx={{ mx: 'auto' }} container size={10} justifyContent="space-between" alignItems="center" maxWidth="xl">
           <Grid>
             <Typography variant="h6" component="div">
-              <StyledLink to="/">Music app</StyledLink>
+              <StyledLink to="/">Chat</StyledLink>
             </Typography>
           </Grid>
           {user ? <UserMenu user={user} /> : <AnonymousMenu />}

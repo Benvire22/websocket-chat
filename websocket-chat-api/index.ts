@@ -5,7 +5,7 @@ import config from './config';
 import mongoose from 'mongoose';
 import usersRouter from './routers/users';
 import { WebSocket } from 'ws';
-import { IncomingMessage, UserMessage } from './types';
+import { ChatUser, IncomingMessage, UserMessage } from './types';
 import User from './models/User';
 
 const app = express();
@@ -19,17 +19,26 @@ const chatWsRouter = express.Router();
 
 const connectedClients: WebSocket[] = [];
 const messages: UserMessage[] = [];
+const users: ChatUser[] = [];
 
 chatWsRouter.ws('/chat', async (ws, _req) => {
   try {
     connectedClients.push(ws);
     console.log('Client connected! Total clients', connectedClients.length);
+
     ws.send(JSON.stringify({
       type: 'MESSAGES',
       payload: messages.slice(-30),
     }));
 
-    let username = '';
+    connectedClients.forEach((clientWs) => {
+      clientWs.send(JSON.stringify({
+        type: 'USERS',
+        payload: users,
+      }));
+    });
+
+    let user: ChatUser;
 
     ws.on('message', async (message) => {
       try {
@@ -48,12 +57,24 @@ chatWsRouter.ws('/chat', async (ws, _req) => {
             return;
           }
 
-          username = existingUser.displayName;
+          user = {
+            _id: existingUser._id,
+            displayName: existingUser.displayName,
+          };
+
+          users.push(user);
+
+          connectedClients.forEach((clientWs) => {
+            clientWs.send(JSON.stringify({
+              type: 'USERS',
+              payload: users,
+            }));
+          });
         }
 
         if (decodedMessage.type === 'SEND_MESSAGE') {
           const newMessage = {
-            user: username,
+            user: user.displayName,
             message: decodedMessage.payload,
           };
 
@@ -79,15 +100,25 @@ chatWsRouter.ws('/chat', async (ws, _req) => {
       console.log('Client disconnected!');
       const index = connectedClients.indexOf(ws);
       connectedClients.splice(index, 1);
+
+      const userIndex = users.indexOf(user);
+      users.splice(userIndex, 1);
+
+      connectedClients.forEach((clientWs) => {
+        clientWs.send(JSON.stringify({
+          type: 'USERS',
+          payload: users,
+        }));
+      });
     });
   } catch (e) {
     console.error(e);
   }
 });
 
+
 app.use(express.json());
 app.use('/users', usersRouter);
-
 app.use(chatWsRouter);
 
 const run = async () => {

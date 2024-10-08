@@ -4,6 +4,11 @@ export interface ChatMessage {
   message: string;
 }
 
+export interface ChatUser {
+  _id: string;
+  displayName: string;
+}
+
 export interface IncomingMessage {
   type: string;
   payload: ChatMessage;
